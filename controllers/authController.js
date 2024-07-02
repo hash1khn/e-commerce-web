@@ -197,6 +197,7 @@ const resetPassword = async (req, res) => {
 // Get user by ID
 const getUserById = async (req, res) => {
   try {
+    // console.log(req.user)
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
@@ -204,6 +205,21 @@ const getUserById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+//Get User
+const getUser=async (req, res)=>{
+  try{
+    console.log(req.user._id);
+    const user=await User.findById(req.user._id);
+    if(!user){
+      return res.status(404).json("user not found");
+    }
+    res.status(200).json(user);
+  }
+  catch(err){
+    res.status(500).json({ error: err.message });
+  }
+}
 
 // Update user by ID
 const updateUserById = async (req, res) => {
@@ -227,4 +243,4 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword, getUserById, updateUserById, deleteUserById,verifyEmail };
+module.exports = { register, login, forgotPassword, resetPassword, getUserById, updateUserById, deleteUserById,verifyEmail,getUser };
