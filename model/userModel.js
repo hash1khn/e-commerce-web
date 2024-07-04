@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema({
   address: {
     type: String,
   },
+  profilePicture: {
+    type: String,
+  },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart',
@@ -35,10 +38,15 @@ const userSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   isVerified: {
-    type:String,
+    type: String,
     default: false,
   },
   emailVerificationToken: String,
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  }
 });
 
 // Middleware to hash password before saving user document

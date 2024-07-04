@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 // Register
 const register = async (req, res) => {
-  const { username, email, address, phoneNumber, password, confirmPassword } = req.body;
+  const { username, email, address, phoneNumber, password, confirmPassword ,role} = req.body;
 
   if (password !== confirmPassword) {
     return res.status(400).json({ message: 'Passwords do not match' });
@@ -209,8 +209,8 @@ const getUserById = async (req, res) => {
 //Get User
 const getUser=async (req, res)=>{
   try{
-    console.log(req.user._id);
-    const user=await User.findById(req.user._id);
+    console.log(req.user);
+    const user=req.user
     if(!user){
       return res.status(404).json("user not found");
     }
@@ -218,6 +218,18 @@ const getUser=async (req, res)=>{
   }
   catch(err){
     res.status(500).json({ error: err.message });
+  }
+}
+//update by  user
+const updateByUser=async (req, res) => {
+  try{
+    const user = req.user
+    console.log(req.body)
+    const updatedUser= await User.findByIdAndUpdate(user._id,req.body, { new: true, runValidators: true });
+    res.status(200).json({data:updatedUser});
+  }
+  catch(err){
+    res.status(500).json({message:"cannot update user"});
   }
 }
 
@@ -243,4 +255,21 @@ const deleteUserById = async (req, res) => {
   }
 };
 
-module.exports = { register, login, forgotPassword, resetPassword, getUserById, updateUserById, deleteUserById,verifyEmail,getUser };
+// Upload profile picture
+const uploadProfilePicture = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.profilePicture = req.file ? req.file.filename : user.profilePicture; // Using filename stored in GridFS
+    await user.save();
+
+    res.status(200).json({ message: 'Profile picture uploaded successfully', profilePicture: user.profilePicture });
+  } catch (err) {
+    res.status(500).json({ message: 'Error uploading profile picture', error: err.message });
+  }
+};
+
+module.exports = { register, login, forgotPassword, resetPassword, getUserById, updateUserById, deleteUserById,verifyEmail,getUser,updateByUser,uploadProfilePicture };

@@ -4,18 +4,15 @@ const Category = require('../model/categoryModel');
 // Create product
 const createProduct = async (req, res) => {
     try {
-        const { name, description, quantity, price, photo, categoryId } = req.body;
-        const category = await Category.findById(categoryId);
-        if (!category) {
-            return res.status(400).json({ message: 'Invalid category ID' });
-        }
-        const product = new Product({ name, description, quantity, price, photo, category: categoryId });
-        await product.save();
-        res.status(200).json(product);
+      const { name, description, quantity, price } = req.body;
+      const photo = req.file ? req.file.filename : null; // Using filename stored in GridFS
+      const product = new Product({ name, description, quantity, price, photo });
+      await product.save();
+      res.status(200).json(product);
     } catch (err) {
-        res.status(500).json({ message: "incorrect input" });
+      res.status(500).json({ message: 'Error creating product', error: err.message });
     }
-};
+  };
 
 // Get a product by ID
 const getProductById = async (req, res) => {
@@ -49,7 +46,8 @@ const getAllProducts = async (req, res) => {
 // Update a product by ID
 const updateProductById = async (req, res) => {
     try {
-        const { name, description, quantity, price, photo } = req.body;
+        const { name, description, quantity, price } = req.body;
+        const photo = req.file ? req.file.filename : req.body.photo
         const product = await Product.findByIdAndUpdate(
             req.params.id,
             { name, description, quantity, price, photo },
