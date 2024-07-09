@@ -26,6 +26,6 @@ const upload = multer({
       cb(new Error('Only .jpeg, .jpg, and .png files are allowed'));
     }
   }
-});
+}).array('photos',10);
 
 module.exports = upload;

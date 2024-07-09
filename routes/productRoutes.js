@@ -17,7 +17,7 @@ router.get('/get-all-products', getAllProducts)
 // Get, update, and delete a product by ID
 router.get('/get-single-product/:id',getProductById)
 
-router.put('/update-single-product/:id',authenticateToken,admin,updateProductById)
+router.put('/update-single-product/:id',authenticateToken,admin,upload.single('photo'),updateProductById)
 
 router.delete('/delete-single-product/:id',authenticateToken,admin, deleteProductById)
 

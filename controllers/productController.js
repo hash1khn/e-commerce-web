@@ -5,8 +5,8 @@ const Category = require('../model/categoryModel');
 const createProduct = async (req, res) => {
     try {
       const { name, description, quantity, price } = req.body;
-      const photo = req.file ? req.file.filename : null; // Using filename stored in GridFS
-      const product = new Product({ name, description, quantity, price, photo });
+      const photos = req.files ? req.files.map(file => file.path) : []; 
+      const product = new Product({ name, description, quantity, price, photos });
       await product.save();
       res.status(200).json(product);
     } catch (err) {
@@ -44,24 +44,34 @@ const getAllProducts = async (req, res) => {
 
 
 // Update a product by ID
+// Update a product by ID
 const updateProductById = async (req, res) => {
     try {
-        const { name, description, quantity, price } = req.body;
-        const photo = req.file ? req.file.filename : req.body.photo
-        const product = await Product.findByIdAndUpdate(
-            req.params.id,
-            { name, description, quantity, price, photo },
-            { new: true, runValidators: true }
-        );
+        const { name, description, quantity, price, photoIndex } = req.body;
+        const product = await Product.findById(req.params.id);
+
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
+
+        // Update product details
+        if (name) product.name = name;
+        if (description) product.description = description;
+        if (quantity) product.quantity = quantity;
+        if (price) product.price = price;
+
+        // Update specific photo by index and filename
+        if (req.file && photoIndex !== undefined && photoIndex >= 0 && photoIndex < product.photos.length) {
+            const newPhoto = req.file.path;
+            product.photos[photoIndex] = newPhoto; // Replace the photo at the specified index
+        }
+
+        await product.save();
         res.json(product);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
-
 // Delete a product by ID
 const deleteProductById = async (req, res) => {
     try {
