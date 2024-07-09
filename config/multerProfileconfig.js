@@ -1,19 +1,19 @@
 const multer = require('multer');
 const path = require('path');
 
-// Set up storage configuration
-const storage = multer.diskStorage({
+// Set up storage configuration for profile pictures
+const storageProfile = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, 'uploads/profiles/');
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname/*  + '-' + Date.now() + path.extname(file.originalname) */);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 
-// Initialize upload
-const upload = multer({
-  storage: storage,
+// Initialize upload for profile pictures
+const uploadProfile = multer({
+  storage: storageProfile,
   limits: { fileSize: 1000000 }, // 1MB limit
   fileFilter: (req, file, cb) => {
     const filetypes = /jpeg|jpg|png/;
@@ -26,6 +26,6 @@ const upload = multer({
       cb(new Error('Only .jpeg, .jpg, and .png files are allowed'));
     }
   }
-}).array('photos',10);
+}).single('photo');
 
-module.exports = upload;
+module.exports = uploadProfile;

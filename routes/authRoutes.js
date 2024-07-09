@@ -9,7 +9,7 @@ const {
     updateByUser,
     uploadProfilePicture
   } = require('../controllers/authController');
-const upload = require('../config/multerConfig');
+const uploadProfile = require('../config/multerProfileconfig');
 const router = express.Router();
 const User= require('../model/userModel');
 router.post('/register', register);
@@ -18,14 +18,14 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token',resetPassword);
 router.post('/verify-email/:token', verifyEmail);
 //Upload profile picture
-router.post('/upload-profile-picture', authenticateToken, upload.single('photo'), uploadProfilePicture);
+router.post('/upload-profile-picture', authenticateToken, uploadProfile, uploadProfilePicture);
 
 
 // Protect routes with JWT middleware
 router.get('/get-single-user/:id', authenticateToken,getUserById);
 
 router.put('/update-user/:id', authenticateToken,admin,updateUserById);
-router.put('/update-by-user',authenticateToken,upload.single('photo'),updateByUser)
+router.put('/update-by-user',authenticateToken,uploadProfile,updateByUser)
 router.get('/get-user', authenticateToken,getUser)
 router.delete('/delete-user/:id',authenticateToken,admin,deleteUserById);
 

@@ -1,5 +1,16 @@
 const mongoose = require('mongoose');
 
+const photoSchema = new mongoose.Schema({
+    fileName: {
+        type: String,
+        required: true
+    },
+    filePath: {
+        type: String,
+        required: true
+    }
+}, { _id: false });
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -20,7 +31,7 @@ const productSchema = new mongoose.Schema({
         min: 0
     },
     photos: {
-        type: [String],
+        type: [photoSchema],
         required: false
     },
     category: {
